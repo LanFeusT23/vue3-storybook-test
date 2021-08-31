@@ -1,4 +1,6 @@
-# test-storybook
+# vue3-storybook-test
+
+Vue 3 + tailwind + scss + Storybook setup
 
 ## Project setup
 
