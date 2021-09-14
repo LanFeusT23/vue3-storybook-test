@@ -1,14 +1,26 @@
 import AppButton from "./AppButton.vue";
 
 export default {
-    title: "Forms/AppButton",
+    title: "forms/AppButton",
     component: AppButton,
     argTypes: {
         type: {
-            control: { type: "select", options: ["primary", "secondary"] },
+            control: {
+                type: "select",
+            },
+            options: ["primary", "secondary", "tertiary"],
         },
         size: {
-            control: { type: "select", options: ["small", "medium", "large"] },
+            control: {
+                type: "select",
+            },
+            options: ["small", "medium", "large"],
+        },
+        default: {
+            control: "text",
+        },
+        loader: {
+            control: "text",
         },
     },
 };
@@ -21,12 +33,21 @@ const Template = (args) => ({
         return { args };
     },
     // And then the `args` are bound to your component with `v-bind="args"`
-    template: `<AppButton v-bind="args">${args.slotTemplate}</AppButton>`,
+    template: `
+        <AppButton v-bind="args">
+            <template v-if="args.icon"><i className="fa fa-smile"></i></template>
+            <template v-else>{{ args.default }}</template>
+        </AppButton>
+    `,
 });
 
 export const Base = Template.bind({});
 Base.args = {
     type: "primary",
     size: "medium",
-    slotTemplate: "some button",
+    icon: false,
+    disabled: false,
+    loading: false,
+    default: "Click Me!",
+    loader: `<i class="text-lg fas fa-spinner fa-pulse"></i>`,
 };

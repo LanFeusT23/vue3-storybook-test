@@ -1,86 +1,148 @@
 <template>
-    <button class="relative rounded-md" :class="cssClasses">
-        <slot></slot>
+    <button
+        v-bind="attrs"
+        :aria-disabled="disabled"
+        :class="cssClasses"
+        class="relative flex items-center justify-center h-10 px-2 py-2 text-sm tracking-wide rounded-full"
+    >
+        <span :class="{ 'opacity-0': loading }" class="flex items-center gap-2">
+            <slot></slot>
+        </span>
+        <span
+            v-if="loading"
+            class="absolute top-0 bottom-0 left-0 right-0 grid custom-button__loading place-items-center"
+        >
+            <slot name="loader">
+                <i class="text-lg fas fa-spinner fa-pulse"></i>
+            </slot>
+        </span>
     </button>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType, toRefs } from "vue";
+import { computed, toRefs, defineComponent, PropType } from "vue";
 
 export default defineComponent({
+    name: "AppButton",
     props: {
         type: {
-            type: String as PropType<"primary" | "secondary">,
+            type: String as PropType<"primary" | "secondary" | "tertiary">,
             default: "primary",
         },
         size: {
             type: String as PropType<"small" | "medium" | "large">,
             default: "medium",
         },
+        icon: Boolean,
         danger: Boolean,
+        loading: Boolean,
         disabled: Boolean,
     },
-    setup(props) {
-        const { type, size, danger, disabled } = toRefs(props);
+    setup(props, { attrs }) {
+        const { type, size, disabled, danger, icon, loading } = toRefs(props);
 
         const cssClasses = computed(() => {
             return {
-                "app-button": true,
-                "app-button--primary": type.value === "primary",
-                "app-button--secondary": type.value === "secondary",
-                "app-button--small": size.value === "small",
-                "app-button--medium": size.value === "medium",
-                "app-button--large": size.value === "large",
-                "app-button--danger": danger.value,
-                "app-button--disabled": disabled.value,
+                "custom-button": true,
+                "custom-button--primary": type.value === "primary",
+                "custom-button--secondary": type.value === "secondary",
+                "custom-button--tertiary": type.value === "tertiary",
+                "custom-button--small": size.value === "small",
+                "custom-button--large": size.value === "large",
+                "custom-button--danger": danger.value,
+                "custom-button--disabled": disabled.value,
+                "custom-button--icon": icon.value,
             };
         });
 
         return {
+            loading,
             cssClasses,
+            attrs,
         };
     },
 });
 </script>
 
-<style lang="scss" scoped>
-.app-button {
+<style lang="scss">
+.custom-button {
     $self: &;
-    @apply text-white px-4 text-base;
 
-    &#{$self}--small {
-        @apply text-xs;
-    }
+    &#{$self} {
+        @apply text-base h-11 px-6;
 
-    &#{$self}--large {
-        @apply text-3xl;
-    }
-
-    &#{$self}--primary {
-        @apply bg-blue-500;
-
-        &:active {
-            @apply bg-opacity-30;
+        &--icon {
+            @apply px-0 h-11 w-11;
         }
-    }
 
-    &#{$self}--secondary {
-        @apply border-2 border-blue-500 text-blue-500;
+        &--large {
+            @apply h-12;
 
-        &:active {
-            @apply bg-blue-500 bg-opacity-30;
+            &#{$self}--icon {
+                @apply h-12 w-12;
+            }
         }
-    }
 
-    &#{$self}--disabled {
-        @apply bg-gray-800;
-    }
+        &--small {
+            @apply h-10 text-sm;
 
-    &#{$self}--danger {
-        @apply bg-red-800;
+            &#{$self}--icon {
+                @apply h-10 w-10;
+            }
+        }
 
-        &:active {
-            @apply bg-opacity-30;
+        &--disabled {
+            @apply cursor-default;
+        }
+
+        &--primary {
+            @apply text-gray-100 bg-yellow-500 border border-yellow-500 hover:bg-opacity-80 active:bg-opacity-60;
+
+            &:focus {
+                outline-color: var(--bg-yellow-500);
+            }
+
+            &#{$self} {
+                &--danger {
+                    @apply bg-red-500 border-red-500 hover:bg-red-200;
+                }
+
+                &--disabled {
+                    @apply bg-gray-400 text-gray-500 border-gray-400 hover:bg-gray-400;
+                }
+            }
+        }
+
+        &--secondary {
+            @apply text-gray-700 border-2 border-yellow-500 bg-transparent hover:bg-opacity-40;
+
+            &:focus {
+                outline-color: var(--color-red-500);
+            }
+
+            &#{$self} {
+                &--danger {
+                    @apply border-red-500 hover:bg-red-200;
+                }
+
+                &--disabled {
+                    @apply border-gray-500 text-gray-500 hover:border-gray-500 hover:bg-transparent;
+                }
+            }
+        }
+
+        &--tertiary {
+            @apply text-yellow-500 border-transparent bg-transparent hover:text-gray-700;
+
+            &#{$self} {
+                &--danger {
+                    @apply text-red-500 hover:text-red-200;
+                }
+
+                &--disabled {
+                    @apply text-gray-500 hover:text-gray-500;
+                }
+            }
         }
     }
 }
