@@ -113,37 +113,23 @@ export default defineComponent({
             reader.readAsDataURL(e.target.files[0]);
             reader.onload = () => {
                 if (!disabled.value) {
-                    // todo remove this when we figure out storybook two way binding
-                    imageValue.value = reader.result;
                     emit("update:modelValue", reader.result);
                 }
             };
         };
 
-        /////////////////////////////////////////////////////////
-        // todo remove this, and uncomment computedjes when we figure out storybook two way binding
-        const imageValue = ref<string | ArrayBuffer | null>();
-        onMounted(() => {
-            imageValue.value = modelValue?.value;
+        const imageValue = computed({
+            get: () => {
+                console.log(modelValue?.value);
+
+                return modelValue?.value;
+            },
+            set: (val) => {
+                if (!disabled.value) {
+                    emit("update:modelValue", val);
+                }
+            },
         });
-
-        watch(modelValue, (val) => {
-            imageValue.value = val;
-        });
-
-        // const imageValue = computed({
-        //     get: () => {
-        //         console.log(modelValue?.value)
-
-        //         return modelValue?.value
-        //     },
-        //     set: val => {
-        //         if (!disabled.value) {
-        //             emit("update:modelValue", val)
-        //         }
-        //     }
-        // })
-        /////////////////////////////////////////////////////////
 
         return {
             focusInput,
